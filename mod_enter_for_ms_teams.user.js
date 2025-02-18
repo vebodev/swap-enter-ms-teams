@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name            Swap Enter/Shift-Enter for Microsoft Teams
+// @name            Modify Enter for Microsoft Teams
 // @match           https://teams.microsoft.com/*
 // @grant           none
 // @namespace       https://github.com/vebodev/swap-enter-ms-teams
