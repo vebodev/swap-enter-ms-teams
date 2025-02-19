@@ -20,12 +20,20 @@
     'use strict';
     let isProcessing = false; // 防止递归的标记
 
+    // 新增：检测提及弹窗是否可见
+    function isMentionPopupOpen() {
+        const popup = document.querySelector('div[data-tid="AutocompletePopup-Mentions"]');
+        return popup && 
+               popup.offsetParent !== null && // 检测可见性
+               getComputedStyle(popup).display !== 'none';
+    }
+
     function isEditor(target) {
         return target.closest('div[data-tid="ckeditor"][contenteditable="true"]');
     }
 
     function handleKeydown(e) {
-        if (!isEditor(e.target) || isProcessing) return;
+        if (!isEditor(e.target) || isProcessing || isMentionPopupOpen()) return; // 新增检测条件
 
         isProcessing = true; // 开始处理
 
