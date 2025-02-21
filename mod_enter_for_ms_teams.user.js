@@ -23,9 +23,14 @@
     // 新增：检测提及弹窗是否可见
     function isMentionPopupOpen() {
         const popup = document.querySelector('div[data-tid="AutocompletePopup-Mentions"]');
-        return popup && 
+        return popup &&
                popup.offsetParent !== null && // 检测可见性
                getComputedStyle(popup).display !== 'none';
+    }
+
+    // 新增：检测是否在列表项中
+    function isInsideListItem(target) {
+        return target.closest('li[]');
     }
 
     function isEditor(target) {
@@ -38,6 +43,29 @@
         isProcessing = true; // 开始处理
 
         try {
+            // 修改列表项中的 Enter 行为
+            if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
+                const inListItem = isInsideListItem(e.target);
+    
+                console.log("Enter");
+    
+                if (inListItem) {
+                    console.log("In list");
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+    
+                    // 模拟 Ctrl+Enter 发送消息
+                    const newEvent = new KeyboardEvent('keydown', {
+                        key: 'Enter',
+                        ctrlKey: true,  // 添加 ctrlKey 标记
+                        bubbles: true,
+                        cancelable: true
+                    });
+                    e.target.dispatchEvent(newEvent);
+                    return;
+                }
+            }
+
             // 处理普通Enter -> 转换为Shift+Enter
             if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
                 e.preventDefault();
