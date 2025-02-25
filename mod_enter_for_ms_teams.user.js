@@ -28,9 +28,9 @@
                getComputedStyle(popup).display !== 'none';
     }
 
-    // 新增：检测是否在列表项中
+    // 修正：修复列表项选择器并添加额外检查
     function isInsideListItem(target) {
-        return target.closest('li[]');
+        return target.closest('li'); // 移除无效的方括号
     }
 
     function isEditor(target) {
@@ -38,30 +38,30 @@
     }
 
     function handleKeydown(e) {
-        if (!isEditor(e.target) || isProcessing || isMentionPopupOpen()) return; // 新增检测条件
+        if (!isEditor(e.target) || isProcessing || isMentionPopupOpen()) return;
 
-        isProcessing = true; // 开始处理
+        isProcessing = true;
 
         try {
-            // 修改列表项中的 Enter 行为
             if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
                 const inListItem = isInsideListItem(e.target);
-    
-                console.log("Enter");
-    
-                if (inListItem) {
+                
+                // 新增：确保在编辑器内部且没有其他特殊状态
+                if (inListItem && isEditor(e.target)) {
                     console.log("In list");
                     e.preventDefault();
                     e.stopImmediatePropagation();
-    
-                    // 模拟 Ctrl+Enter 发送消息
-                    const newEvent = new KeyboardEvent('keydown', {
-                        key: 'Enter',
-                        ctrlKey: true,  // 添加 ctrlKey 标记
-                        bubbles: true,
-                        cancelable: true
-                    });
-                    e.target.dispatchEvent(newEvent);
+
+                    // 新增延迟处理以确保事件顺序
+                    setTimeout(() => {
+                        const newEvent = new KeyboardEvent('keydown', {
+                            key: 'Enter',
+                            ctrlKey: true,
+                            bubbles: true,
+                            cancelable: true
+                        });
+                        e.target.dispatchEvent(newEvent);
+                    }, 10);
                     return;
                 }
             }
